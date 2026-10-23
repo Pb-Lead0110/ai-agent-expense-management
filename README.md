@@ -98,5 +98,5 @@ sequenceDiagram
 Uruchomienie automatycznych testów jednostkowych:
 
 ```bash
-pytest
+python -m pytest
 ```
