@@ -1,12 +1,13 @@
-import sqlite3
+import json
 import pytest
-from app.database import init_db, DB_PATH
+from app import database
 from app.tools import get_database_schema, execute_sql_query
 
 @pytest.fixture(autouse=True)
-def setup_test_database():
-    """Fixture przygotowujący świeżą bazę danych przed każdym testem."""
-    init_db()
+def setup_test_database(tmp_path, monkeypatch):
+    """Fixture tworzący osobną bazę w folderze tymczasowym, żeby testy nie kasowały expenses.db."""
+    monkeypatch.setattr(database, "DB_PATH", str(tmp_path / "test_expenses.db"))
+    database.init_db()
     yield
 
 def test_get_database_schema():
@@ -19,13 +20,19 @@ def test_get_database_schema():
 def test_execute_sql_query_select():
     """Sprawdza wykonanie poprawnego zapytania SELECT."""
     result = execute_sql_query("SELECT COUNT(*) as total FROM expenses;")
-    assert "total" in result
-    assert "6" in result  # Mamy 6 przykładowych rekordów w init_db
+    data = json.loads(result)
+    assert data[0]["total"] == 6  # Mamy 6 przykładowych rekordów w init_db
+
+def test_execute_sql_query_sum_software():
+    """Sprawdza sumę dla kategorii Software (ten sam przykład co w README)."""
+    result = execute_sql_query("SELECT SUM(amount) as suma FROM expenses WHERE category = 'Software';")
+    data = json.loads(result)
+    assert data[0]["suma"] == 400.0
 
 def test_execute_sql_query_insert():
     """Sprawdza dodanie nowego rekordu przez zapytanie INSERT."""
     insert_query = """
-    INSERT INTO expenses (category, amount, description) 
+    INSERT INTO expenses (category, amount, description)
     VALUES ('Software', 99.99, 'Testowa subskrypcja');
     """
     response = execute_sql_query(insert_query)
@@ -33,7 +40,9 @@ def test_execute_sql_query_insert():
 
     # Weryfikacja w bazie
     select_res = execute_sql_query("SELECT * FROM expenses WHERE description = 'Testowa subskrypcja';")
-    assert "99.99" in select_res
+    data = json.loads(select_res)
+    assert len(data) == 1
+    assert data[0]["amount"] == 99.99
 
 def test_execute_sql_query_invalid_syntax():
     """Sprawdza, czy funkcja bezpiecznie wyłapuje błędy składni SQL."""

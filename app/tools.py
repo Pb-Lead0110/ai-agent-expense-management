@@ -1,10 +1,10 @@
 import sqlite3
 import json
-from app.database import DB_PATH
+from app.database import get_db_connection
 
 def get_database_schema() -> str:
     """Zwraca opis struktury tabeli 'expenses' w bazie danych."""
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
     
     cursor.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='expenses';")
@@ -21,8 +21,7 @@ def execute_sql_query(query: str) -> str:
     Wykonuje zapytanie SQL na bazie danych i zwraca wynik w formacie JSON
     lub komunikat o błędzie/sukcesie.
     """
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+    conn = get_db_connection()
     cursor = conn.cursor()
     
     try:
