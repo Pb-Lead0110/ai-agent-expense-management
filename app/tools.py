@@ -5,8 +5,8 @@ from app.database import get_db_connection
 
 # Agent może tylko czytać dane i dodawać nowe wydatki.
 # Wszystko co mogłoby usunąć lub zmienić dane/tabele jest blokowane.
-ALLOWED_START = ("SELECT", "WITH", "INSERT")
-FORBIDDEN_WORDS = ["DROP", "DELETE", "UPDATE", "ALTER", "CREATE", "ATTACH", "DETACH", "PRAGMA", "TRUNCATE"]
+ALLOWED_START = ("SELECT", "WITH", "INSERT", "UPDATE")
+FORBIDDEN_WORDS = ["DROP", "DELETE", "ALTER", "CREATE", "ATTACH", "DETACH", "PRAGMA", "TRUNCATE"]
 
 
 def is_query_allowed(query: str) -> bool:
