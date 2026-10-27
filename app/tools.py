@@ -1,6 +1,27 @@
 import sqlite3
 import json
+import re
 from app.database import get_db_connection
+
+# Agent może tylko czytać dane i dodawać nowe wydatki.
+# Wszystko co mogłoby usunąć lub zmienić dane/tabele jest blokowane.
+ALLOWED_START = ("SELECT", "WITH", "INSERT")
+FORBIDDEN_WORDS = ["DROP", "DELETE", "UPDATE", "ALTER", "CREATE", "ATTACH", "DETACH", "PRAGMA", "TRUNCATE"]
+
+
+def is_query_allowed(query: str) -> bool:
+    """Sprawdza, czy zapytanie od modelu jest bezpieczne do wykonania."""
+    q = query.strip().upper()
+    # Usuwamy teksty w apostrofach, żeby np. opis 'Update licencji' nie blokował INSERT-a
+    q = re.sub(r"'[^']*'", "''", q)
+
+    if not q.startswith(ALLOWED_START):
+        return False
+    for word in FORBIDDEN_WORDS:
+        if re.search(rf"\b{word}\b", q):
+            return False
+    return True
+
 
 def get_database_schema() -> str:
     """Zwraca opis struktury tabeli 'expenses' w bazie danych."""
@@ -21,6 +42,9 @@ def execute_sql_query(query: str) -> str:
     Wykonuje zapytanie SQL na bazie danych i zwraca wynik w formacie JSON
     lub komunikat o błędzie/sukcesie.
     """
+    if not is_query_allowed(query):
+        return "Błąd: zapytanie zablokowane. Dozwolone jest tylko odczytywanie danych (SELECT) i dodawanie wydatków (INSERT)."
+
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -64,7 +88,7 @@ TOOLS_SCHEMA = [
         "type": "function",
         "function": {
             "name": "execute_sql_query",
-            "description": "Wykonuje zapytanie SQL (SELECT, INSERT, itp.) na bazie SQLite i zwraca wynik.",
+            "description": "Wykonuje zapytanie SQL na bazie SQLite i zwraca wynik. Dozwolone są tylko SELECT i INSERT.",
             "parameters": {
                 "type": "object",
                 "properties": {

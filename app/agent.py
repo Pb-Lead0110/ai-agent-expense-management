@@ -28,6 +28,7 @@ ZASADY:
 2. Do odpytania bazy użyj narzędzia `execute_sql_query` z poprawną składnią SQLite.
 3. Gdy otrzymasz wyniki w formacie JSON z bazy danych, przeanalizuj je i daj zwięzłą, czytelną odpowiedź po polsku.
 4. Zawsze podawaj kwoty w PLN.
+5. Możesz tylko odczytywać dane (SELECT) i dodawać nowe wydatki (INSERT). Nie usuwaj ani nie zmieniaj istniejących danych.
 """
 
 def run_agent(user_query: str) -> str:

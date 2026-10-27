@@ -52,6 +52,28 @@ def test_execute_sql_query_insert():
     assert len(data) == 1
     assert data[0]["amount"] == 99.99
 
+def test_drop_table_is_blocked():
+    """Agent nie może usunąć tabeli."""
+    result = execute_sql_query("DROP TABLE expenses;")
+    assert "zablokowane" in result
+    # Tabela dalej istnieje
+    assert "CREATE TABLE expenses" in get_database_schema()
+
+def test_delete_is_blocked():
+    """Agent nie może usuwać wydatków, także ukrytym DELETE po WITH."""
+    assert "zablokowane" in execute_sql_query("DELETE FROM expenses;")
+    assert "zablokowane" in execute_sql_query("WITH x AS (SELECT 1) DELETE FROM expenses;")
+
+    data = json.loads(execute_sql_query("SELECT COUNT(*) as total FROM expenses;"))
+    assert data[0]["total"] == 6
+
+def test_insert_with_forbidden_word_in_text_is_allowed():
+    """Słowo 'Update' w opisie wydatku nie powinno blokować INSERT-a."""
+    result = execute_sql_query(
+        "INSERT INTO expenses (category, amount, description) VALUES ('Software', 10, 'Update licencji');"
+    )
+    assert "wykonane pomyślnie" in result
+
 def test_execute_sql_query_invalid_syntax():
     """Sprawdza, czy funkcja bezpiecznie wyłapuje błędy składni SQL."""
     result = execute_sql_query("SELECT * FROM non_existing_table;")
