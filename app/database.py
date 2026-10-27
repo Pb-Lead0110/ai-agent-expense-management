@@ -1,7 +1,8 @@
 import sqlite3
 import os
 
-DB_PATH = "expenses.db"
+# Baza zawsze w głównym folderze projektu, niezależnie skąd uruchomimy skrypt
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "expenses.db")
 
 def get_db_connection():
     """Tworzy połączenie z bazą danych SQLite."""

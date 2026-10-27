@@ -29,6 +29,14 @@ def test_execute_sql_query_sum_software():
     data = json.loads(result)
     assert data[0]["suma"] == 400.0
 
+def test_execute_sql_query_with_cte():
+    """Zapytanie zaczynające się od WITH też powinno zwrócić dane, a nie 'zmieniono wierszy'."""
+    result = execute_sql_query(
+        "WITH drogie AS (SELECT * FROM expenses WHERE amount > 400) SELECT COUNT(*) as ile FROM drogie;"
+    )
+    data = json.loads(result)
+    assert data[0]["ile"] == 2
+
 def test_execute_sql_query_insert():
     """Sprawdza dodanie nowego rekordu przez zapytanie INSERT."""
     insert_query = """

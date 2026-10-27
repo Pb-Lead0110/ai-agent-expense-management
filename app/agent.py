@@ -9,10 +9,13 @@ from app.tools import get_database_schema, execute_sql_query, TOOLS_SCHEMA
 load_dotenv()
 
 # Inicjalizacja klienta OpenAI/Groq
-# Domyślnie używamy darmowego i bardzo szybkiego API Groq z modelem Llama 3.3 / Llama 3.1
+# Jeśli jest klucz Groq, to używamy Groq (darmowy) z modelem gpt-oss-20b, w przeciwnym razie OpenAI
 api_key = os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
 base_url = "https://api.groq.com/openai/v1" if os.getenv("GROQ_API_KEY") else None
 model_name = "openai/gpt-oss-20b" if os.getenv("GROQ_API_KEY") else "gpt-4o-mini"
+
+if not api_key:
+    raise SystemExit("Brak klucza API! Uzupełnij GROQ_API_KEY albo OPENAI_API_KEY w pliku .env (wzór jest w .env.example).")
 
 client = OpenAI(api_key=api_key, base_url=base_url)
 
@@ -54,7 +57,11 @@ def run_agent(user_query: str) -> str:
         if response_message.tool_calls:
             for tool_call in response_message.tool_calls:
                 function_name = tool_call.function.name
-                function_args = json.loads(tool_call.function.arguments)
+                try:
+                    function_args = json.loads(tool_call.function.arguments)
+                except json.JSONDecodeError:
+                    # Czasem model zwraca niepoprawny JSON w argumentach
+                    function_args = {}
 
                 print(f"🤖 [AGENT ACTION]: Wywołuję narzędzie `{function_name}` z argumentami: {function_args}")
 

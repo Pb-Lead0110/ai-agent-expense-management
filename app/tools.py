@@ -27,8 +27,9 @@ def execute_sql_query(query: str) -> str:
     try:
         cursor.execute(query)
         
-        # Jeśli zapytanie zwraca dane (np. SELECT)
-        if query.strip().upper().startswith("SELECT"):
+        # Jeśli zapytanie zwraca dane (SELECT, WITH ... SELECT itp.)
+        # cursor.description jest ustawione tylko wtedy, gdy są kolumny wyniku
+        if cursor.description is not None:
             rows = cursor.fetchall()
             results = [dict(row) for row in rows]
             conn.close()

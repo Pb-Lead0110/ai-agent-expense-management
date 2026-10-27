@@ -29,9 +29,13 @@ def main():
             print(f"\nAgent > {response}\n")
             print("-" * 50)
             
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
             print("\nPrzerwano działanie programu. Do widzenia!")
             sys.exit(0)
+        except Exception as e:
+            # Np. brak internetu, zły klucz API albo limit zapytań - nie wywalamy całego programu
+            print(f"\n❌ Wystąpił błąd: {e}")
+            print("Spróbuj ponownie.")
 
 if __name__ == "__main__":
     main()
