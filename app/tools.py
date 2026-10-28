@@ -12,7 +12,7 @@ FORBIDDEN_WORDS = ["DROP", "DELETE", "ALTER", "CREATE", "ATTACH", "DETACH", "PRA
 def is_query_allowed(query: str) -> bool:
     """Sprawdza, czy zapytanie od modelu jest bezpieczne do wykonania."""
     q = query.strip().upper()
-    # Usuwamy teksty w apostrofach, żeby np. opis 'Delete konta testowego' nie blokował zapytania
+    # Usuwamy teksty w apostrofach, żeby np. opis 'Książka o SQL: DROP i DELETE' nie blokował zapytania
     q = re.sub(r"'[^']*'", "''", q)
 
     if not q.startswith(ALLOWED_START):

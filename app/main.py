@@ -3,13 +3,13 @@ from app.agent import run_agent
 
 def main():
     print("=" * 50)
-    print("  🤖 AGENT BAZY WYDATKÓW (AI Expense Analyst)")
+    print("  🤖 AGENT WYDATKÓW DOMOWYCH")
     print("=" * 50)
-    print("Zadaj pytanie dotyczące wydatków w firmie.")
+    print("Zadaj pytanie dotyczące wydatków domowych.")
     print("Przykłady:")
-    print("  - Ile łącznie wydaliśmy na kategorię Software?")
-    print("  - Pokaż 3 najdroższe wydatki.")
-    print("  - Dodaj wydatek: 150 zł na kawiarnię w kategorii Food.")
+    print("  - Ile wydaliśmy na jedzenie w październiku?")
+    print("  - Porównaj wydatki z września i października.")
+    print("  - Dodaj wydatek: 45 zł na kawę z przyjaciółmi w kategorii Rozrywka.")
     print("Wpisz 'exit' lub 'q', aby zakończyć.\n")
 
     while True:

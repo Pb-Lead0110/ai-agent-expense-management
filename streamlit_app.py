@@ -12,7 +12,7 @@ from app.tools import execute_sql_query
 # Limit pytań na jedną sesję, żeby demo nie zużyło całego limitu API
 MAX_QUESTIONS = 10
 
-st.set_page_config(page_title="AI Agent do analizy wydatków")
+st.set_page_config(page_title="AI Agent wydatków domowych")
 
 # Każdy odwiedzający dostaje własną kopię bazy z przykładowymi danymi,
 # żeby jego INSERT/UPDATE nie zmieniały danych innym osobom
@@ -37,9 +37,9 @@ def show_steps(steps):
                 st.write("Pobranie struktury tabeli (get_database_schema)")
 
 
-st.title("AI Agent do analizy wydatków")
+st.title("AI Agent wydatków domowych")
 st.write(
-    "Zadaj pytanie o wydatki firmowe. Agent sam napisze zapytanie SQL, "
+    "Zapytaj o domowe wydatki z września i października. Agent sam napisze zapytanie SQL, "
     "wykona je na bazie SQLite i odpowie po polsku."
 )
 st.caption("Agent nie pamięta poprzednich pytań - każde pytanie traktuje osobno.")
@@ -54,10 +54,11 @@ with st.sidebar:
 
     st.header("Przykładowe pytania")
     st.markdown(
-        "- Ile łącznie wydaliśmy na kategorię Software?\n"
-        "- Pokaż 3 najdroższe wydatki.\n"
-        "- Dodaj wydatek: 150 zł na kawiarnię w kategorii Food.\n"
-        "- Zmień kwotę wydatku o id 1 na 175 zł."
+        "- Ile wydaliśmy na jedzenie w październiku?\n"
+        "- Na co poszło najwięcej pieniędzy we wrześniu?\n"
+        "- Porównaj wydatki z września i października.\n"
+        "- Dodaj wydatek: 45 zł na kawę z przyjaciółmi w kategorii Rozrywka.\n"
+        "- Zmień kwotę wydatku o id 1 na 400 zł."
     )
     st.caption(f"Pozostało pytań: {MAX_QUESTIONS - st.session_state.questions} z {MAX_QUESTIONS}")
     st.markdown("[Kod na GitHubie](https://github.com/Pb-Lead0110/ai-agent-expense-management)")
@@ -72,7 +73,7 @@ limit_reached = st.session_state.questions >= MAX_QUESTIONS
 if limit_reached:
     st.info("Wykorzystano limit pytań w tej sesji. Projekt możesz uruchomić u siebie - instrukcja jest na GitHubie.")
 
-question = st.chat_input("Np. Ile wydaliśmy na Software?", disabled=limit_reached)
+question = st.chat_input("Np. Ile wydaliśmy na jedzenie?", disabled=limit_reached)
 
 if question:
     st.session_state.questions += 1

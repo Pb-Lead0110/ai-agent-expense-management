@@ -30,14 +30,28 @@ def init_db(db_path=None):
         )
     """)
 
-    # Przykładowe dane
+    # Przykładowe wydatki domowe z dwóch miesięcy
     sample_data = [
-        ("Software", 150.00, "Licencja GitHub Copilot", "2026-10-01"),
-        ("Software", 200.00, "Subskrypcja OpenAI API", "2026-10-05"),
-        ("Travel", 450.50, "Bilet kolejowy Warszawa - Kraków", "2026-10-10"),
-        ("Food", 120.00, "Obiad biznesowy z klientem Acme", "2026-10-12"),
-        ("Hardware", 1200.00, "Monitor do pracy zdalnej", "2026-10-15"),
-        ("Software", 50.00, "Domena i hosting", "2026-10-18")
+        # Wrzesień
+        ("Jedzenie", 486.20, "Zakupy spożywcze - pierwsza połowa miesiąca", "2026-09-02"),
+        ("Rachunki", 1850.00, "Czynsz za mieszkanie", "2026-09-05"),
+        ("Rachunki", 289.00, "Rachunek za prąd", "2026-09-10"),
+        ("Rachunki", 79.99, "Internet", "2026-09-12"),
+        ("Transport", 320.00, "Paliwo", "2026-09-15"),
+        ("Jedzenie", 512.80, "Zakupy spożywcze - druga połowa miesiąca", "2026-09-16"),
+        ("Rozrywka", 64.00, "Kino we dwoje", "2026-09-20"),
+        ("Zdrowie", 85.50, "Leki z apteki", "2026-09-24"),
+        ("Zdrowie", 250.00, "Wizyta u dentysty", "2026-09-26"),
+        # Październik
+        ("Transport", 159.00, "Bilet miesięczny", "2026-10-01"),
+        ("Jedzenie", 468.90, "Zakupy spożywcze - pierwsza połowa miesiąca", "2026-10-02"),
+        ("Rachunki", 1850.00, "Czynsz za mieszkanie", "2026-10-05"),
+        ("Rachunki", 79.99, "Internet", "2026-10-12"),
+        ("Rozrywka", 43.00, "Abonament streamingowy", "2026-10-14"),
+        ("Jedzenie", 530.40, "Zakupy spożywcze - druga połowa miesiąca", "2026-10-16"),
+        ("Zdrowie", 120.00, "Badania krwi", "2026-10-20"),
+        ("Jedzenie", 128.40, "Zakupy na urodziny", "2026-10-21"),
+        ("Zdrowie", 54.90, "Witaminy", "2026-10-22")
     ]
 
     cursor.executemany("""

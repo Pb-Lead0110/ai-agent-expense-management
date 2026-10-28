@@ -1,6 +1,6 @@
-# AI Agent do analizy wydatków
+# AI Agent wydatków domowych
 
-Agent AI w Pythonie, który odpowiada na pytania o wydatki firmowe zadawane zwykłym językiem. Model sam decyduje, jakie zapytanie SQL wykonać na bazie SQLite (wzorzec **tool calling**), a potem podsumowuje wynik po polsku.
+Agent AI w Pythonie, który odpowiada na pytania o domowe wydatki zadawane zwykłym językiem, np. „Ile wydaliśmy na jedzenie w październiku?”. Model sam decyduje, jakie zapytanie SQL wykonać na bazie SQLite (wzorzec **tool calling**), a potem podsumowuje wynik po polsku.
 
 **Demo online:** [TUTAJ-LINK.streamlit.app](https://TUTAJ-LINK.streamlit.app) - można przetestować bez instalacji i bez klucza API.
 
@@ -19,14 +19,14 @@ sequenceDiagram
     participant Tools as Narzędzia (tools.py)
     participant DB as SQLite (expenses.db)
 
-    Użytkownik->>Agent: "Ile wydaliśmy na kategorię Software?"
+    Użytkownik->>Agent: "Ile wydaliśmy na jedzenie?"
     Agent->>Tools: get_database_schema()
     Tools-->>Agent: CREATE TABLE expenses (...)
     Agent->>Tools: execute_sql_query("SELECT SUM(amount) ...")
     Tools->>DB: zapytanie SQL
     DB-->>Tools: wynik
-    Tools-->>Agent: [{"suma": 400.0}]
-    Agent-->>Użytkownik: "Na kategorię Software wydano łącznie 400.00 PLN."
+    Tools-->>Agent: [{"suma": 2126.7}]
+    Agent-->>Użytkownik: "Na jedzenie wydaliście łącznie 2126,70 PLN."
 ```
 
 ## Technologie
@@ -40,22 +40,12 @@ sequenceDiagram
 
 ## Struktura projektu
 
-```
-ai-agent-expense-management/
-├── app/
-│   ├── agent.py         # pętla agenta i komunikacja z modelem
-│   ├── database.py      # tworzenie bazy i przykładowe dane
-│   ├── main.py          # interfejs w konsoli
-│   └── tools.py         # narzędzia dla modelu i sprawdzanie zapytań SQL
-├── tests/
-│   └── test_tools.py
-├── .env.example
-├── Dockerfile
-├── docker-compose.yml
-├── pytest.ini
-├── requirements.txt
-└── streamlit_app.py     # wersja webowa (demo)
-```
+- `app/agent.py` - pętla agenta i komunikacja z modelem
+- `app/database.py` - tworzenie bazy i przykładowe wydatki
+- `app/main.py` - wersja w konsoli
+- `app/tools.py` - narzędzia dla modelu i sprawdzanie zapytań SQL
+- `streamlit_app.py` - wersja webowa (demo)
+- `tests/test_tools.py` - testy
 
 ## Konfiguracja
 
@@ -97,7 +87,7 @@ python -m app.database
 python -m app.main
 ```
 
-`python -m app.database` tworzy plik `expenses.db` z 6 przykładowymi wydatkami. Ponowne uruchomienie przywraca dane początkowe.
+`python -m app.database` tworzy plik `expenses.db` z 18 przykładowymi wydatkami domowymi z września i października. Ponowne uruchomienie przywraca dane początkowe.
 
 ### Wersja webowa (lokalnie)
 
@@ -111,11 +101,12 @@ Strona otworzy się pod adresem `http://localhost:8501`. Każda sesja w przeglą
 
 ## Przykładowe pytania
 
-- Ile łącznie wydaliśmy na kategorię Software?
-- Pokaż 3 najdroższe wydatki.
-- Jaki był średni wydatek w październiku?
-- Dodaj wydatek: 150 zł na kawiarnię w kategorii Food.
-- Zmień kwotę wydatku o id 1 na 175 zł.
+- Ile wydaliśmy na jedzenie w październiku?
+- Na co poszło najwięcej pieniędzy we wrześniu?
+- Porównaj wydatki z września i października.
+- Pokaż 3 największe wydatki.
+- Dodaj wydatek: 45 zł na kawę z przyjaciółmi w kategorii Rozrywka.
+- Zmień kwotę wydatku o id 1 na 400 zł.
 
 Aby zakończyć, wpisz `exit` albo `q`.
 

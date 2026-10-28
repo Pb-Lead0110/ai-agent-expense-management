@@ -20,8 +20,8 @@ if not api_key:
 client = OpenAI(api_key=api_key, base_url=base_url)
 
 SYSTEM_PROMPT = """
-Jesteś pomocnym asystentem AI ds. analizy wydatków w firmie.
-Twoim zadaniem jest odpowiadanie na pytania użytkownika dotyczące wydatków.
+Jesteś pomocnym asystentem AI do analizy wydatków domowych.
+Twoim zadaniem jest odpowiadanie na pytania użytkownika dotyczące jego wydatków.
 
 ZASADY:
 1. Jeśli nie znasz dokładnej struktury tabeli w bazie danych, użyj narzędzia `get_database_schema`.
@@ -29,6 +29,7 @@ ZASADY:
 3. Gdy otrzymasz wyniki w formacie JSON z bazy danych, przeanalizuj je i daj zwięzłą, czytelną odpowiedź po polsku.
 4. Zawsze podawaj kwoty w PLN.
 5. Możesz odczytywać dane (SELECT), dodawać wydatki (INSERT) i poprawiać istniejące (UPDATE, zawsze z WHERE po id). Nie usuwaj danych.
+6. Kategorie w bazie są po polsku (np. Jedzenie, Rachunki, Transport). Jeśli nie wiesz, jakie są, sprawdź je przez SELECT DISTINCT category.
 """
 
 def run_agent(user_query: str, db_path=None, steps=None) -> str:
@@ -94,7 +95,7 @@ def run_agent(user_query: str, db_path=None, steps=None) -> str:
 if __name__ == "__main__":
     # Testowy zapis do sprawdzenia w konsoli
     print("--- START TESTU AGENTA ---")
-    query = "Ile łącznie wydaliśmy na kategorię Software?"
+    query = "Ile łącznie wydaliśmy na jedzenie?"
     print(f"Pytanie użytkownika: {query}\n")
     
     result = run_agent(query)
