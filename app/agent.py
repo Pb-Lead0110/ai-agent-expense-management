@@ -31,9 +31,11 @@ ZASADY:
 5. Możesz odczytywać dane (SELECT), dodawać wydatki (INSERT) i poprawiać istniejące (UPDATE, zawsze z WHERE po id). Nie usuwaj danych.
 """
 
-def run_agent(user_query: str) -> str:
+def run_agent(user_query: str, db_path=None, steps=None) -> str:
     """
     Główna pętla decyzyjna agenta (Agentic Loop).
+    db_path - własna baza (używane w wersji webowej, każdy użytkownik ma swoją kopię)
+    steps - lista, do której zapisujemy wywołane narzędzia, żeby pokazać je na stronie
     """
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -65,12 +67,14 @@ def run_agent(user_query: str) -> str:
                     function_args = {}
 
                 print(f"🤖 [AGENT ACTION]: Wywołuję narzędzie `{function_name}` z argumentami: {function_args}")
+                if steps is not None:
+                    steps.append({"tool": function_name, "args": function_args})
 
                 # Wykonanie odpowiedniej funkcji w Pythonie
                 if function_name == "get_database_schema":
-                    tool_output = get_database_schema()
+                    tool_output = get_database_schema(db_path)
                 elif function_name == "execute_sql_query":
-                    tool_output = execute_sql_query(function_args.get("query"))
+                    tool_output = execute_sql_query(function_args.get("query", ""), db_path)
                 else:
                     tool_output = "Błąd: Nieznana funkcja."
 

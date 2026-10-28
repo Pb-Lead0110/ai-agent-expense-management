@@ -2,9 +2,11 @@
 
 Agent AI w Pythonie, który odpowiada na pytania o wydatki firmowe zadawane zwykłym językiem. Model sam decyduje, jakie zapytanie SQL wykonać na bazie SQLite (wzorzec **tool calling**), a potem podsumowuje wynik po polsku.
 
+**Demo online:** [TUTAJ-LINK.streamlit.app](https://TUTAJ-LINK.streamlit.app) - można przetestować bez instalacji i bez klucza API.
+
 ## Jak to działa
 
-1. Użytkownik zadaje pytanie w konsoli.
+1. Użytkownik zadaje pytanie w konsoli albo na stronie.
 2. Model dostaje pytanie oraz dwa narzędzia:
    - `get_database_schema` - zwraca strukturę tabeli `expenses`,
    - `execute_sql_query` - wykonuje zapytanie SQL i zwraca wynik w JSON.
@@ -32,6 +34,7 @@ sequenceDiagram
 - Python 3.11+
 - OpenAI SDK - Groq API (model `openai/gpt-oss-20b`) albo OpenAI API (model `gpt-4o-mini`)
 - SQLite
+- Streamlit (wersja webowa)
 - pytest
 - Docker, Docker Compose
 
@@ -50,7 +53,8 @@ ai-agent-expense-management/
 ├── Dockerfile
 ├── docker-compose.yml
 ├── pytest.ini
-└── requirements.txt
+├── requirements.txt
+└── streamlit_app.py     # wersja webowa (demo)
 ```
 
 ## Konfiguracja
@@ -95,6 +99,16 @@ python -m app.main
 
 `python -m app.database` tworzy plik `expenses.db` z 6 przykładowymi wydatkami. Ponowne uruchomienie przywraca dane początkowe.
 
+### Wersja webowa (lokalnie)
+
+Po instalacji zależności i uzupełnieniu `.env`:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Strona otworzy się pod adresem `http://localhost:8501`. Każda sesja w przeglądarce dostaje własną kopię bazy z przykładowymi danymi, więc nie zmienia `expenses.db`.
+
 ## Przykładowe pytania
 
 - Ile łącznie wydaliśmy na kategorię Software?
@@ -113,6 +127,8 @@ Zapytania SQL pisze model, więc przed wykonaniem każde jest sprawdzane w `tool
 - `UPDATE` musi mieć `WHERE`, żeby nie zmienić wszystkich wierszy naraz,
 - blokowane są m.in. `DROP`, `DELETE`, `ALTER`, `CREATE`, `PRAGMA`,
 - SQLite nie wykona kilku zapytań naraz (np. `SELECT ...; DROP TABLE ...`).
+
+W wersji demo dodatkowo każdy odwiedzający ma własną, tymczasową bazę, a liczba pytań jest ograniczona do 10 na sesję.
 
 To proste zabezpieczenie oparte na słowach kluczowych, wystarczające w projekcie demonstracyjnym. W prawdziwej aplikacji agent powinien łączyć się z bazą przez osobnego użytkownika z ograniczonymi uprawnieniami.
 

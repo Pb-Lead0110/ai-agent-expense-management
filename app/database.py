@@ -4,18 +4,19 @@ import os
 # Baza zawsze w głównym folderze projektu, niezależnie skąd uruchomimy skrypt
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "expenses.db")
 
-def get_db_connection():
-    """Tworzy połączenie z bazą danych SQLite."""
-    conn = sqlite3.connect(DB_PATH)
+def get_db_connection(db_path=None):
+    """Tworzy połączenie z bazą danych SQLite (domyślnie expenses.db)."""
+    conn = sqlite3.connect(db_path or DB_PATH)
     conn.row_factory = sqlite3.Row  # Pozwala na dostęp do kolumn po nazwach
     return conn
 
-def init_db():
+def init_db(db_path=None):
     """Tworzy tabelę i usuwa stary plik bazy, jeśli istnieje."""
-    if os.path.exists(DB_PATH):
-        os.remove(DB_PATH)
+    db_path = db_path or DB_PATH
+    if os.path.exists(db_path):
+        os.remove(db_path)
 
-    conn = get_db_connection()
+    conn = get_db_connection(db_path)
     cursor = conn.cursor()
 
     # Tworzenie tabeli wydatków
@@ -46,7 +47,7 @@ def init_db():
 
     conn.commit()
     conn.close()
-    print("Baza danych 'expenses.db' została pomyślnie utworzona i wypełniona danymi!")
+    print("Baza danych została pomyślnie utworzona i wypełniona danymi!")
 
 if __name__ == "__main__":
     init_db()

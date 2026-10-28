@@ -26,9 +26,9 @@ def is_query_allowed(query: str) -> bool:
     return True
 
 
-def get_database_schema() -> str:
+def get_database_schema(db_path=None) -> str:
     """Zwraca opis struktury tabeli 'expenses' w bazie danych."""
-    conn = get_db_connection()
+    conn = get_db_connection(db_path)
     cursor = conn.cursor()
     
     cursor.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='expenses';")
@@ -40,7 +40,7 @@ def get_database_schema() -> str:
     return "Tabela 'expenses' nie istnieje."
 
 
-def execute_sql_query(query: str) -> str:
+def execute_sql_query(query: str, db_path=None) -> str:
     """
     Wykonuje zapytanie SQL na bazie danych i zwraca wynik w formacie JSON
     lub komunikat o błędzie/sukcesie.
@@ -48,7 +48,7 @@ def execute_sql_query(query: str) -> str:
     if not is_query_allowed(query):
         return "Błąd: zapytanie zablokowane. Dozwolone są tylko SELECT, INSERT i UPDATE (z WHERE)."
 
-    conn = get_db_connection()
+    conn = get_db_connection(db_path)
     cursor = conn.cursor()
     
     try:

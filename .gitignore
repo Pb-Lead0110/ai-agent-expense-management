@@ -5,3 +5,4 @@ __pycache__/
 expenses.db
 .pytest_cache/
 .vscode/
+.streamlit/secrets.toml
