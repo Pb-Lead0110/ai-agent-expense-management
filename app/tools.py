@@ -3,8 +3,8 @@ import json
 import re
 from app.database import get_db_connection
 
-# Agent może tylko czytać dane i dodawać nowe wydatki.
-# Wszystko co mogłoby usunąć lub zmienić dane/tabele jest blokowane.
+# Agent może czytać dane, dodawać nowe wydatki i poprawiać istniejące.
+# Usuwanie danych i zmiany w strukturze tabel są blokowane.
 ALLOWED_START = ("SELECT", "WITH", "INSERT", "UPDATE")
 FORBIDDEN_WORDS = ["DROP", "DELETE", "ALTER", "CREATE", "ATTACH", "DETACH", "PRAGMA", "TRUNCATE"]
 
@@ -12,10 +12,13 @@ FORBIDDEN_WORDS = ["DROP", "DELETE", "ALTER", "CREATE", "ATTACH", "DETACH", "PRA
 def is_query_allowed(query: str) -> bool:
     """Sprawdza, czy zapytanie od modelu jest bezpieczne do wykonania."""
     q = query.strip().upper()
-    # Usuwamy teksty w apostrofach, żeby np. opis 'Update licencji' nie blokował INSERT-a
+    # Usuwamy teksty w apostrofach, żeby np. opis 'Delete konta testowego' nie blokował zapytania
     q = re.sub(r"'[^']*'", "''", q)
 
     if not q.startswith(ALLOWED_START):
+        return False
+    # UPDATE bez WHERE zmieniłby wszystkie wiersze naraz
+    if q.startswith("UPDATE") and "WHERE" not in q:
         return False
     for word in FORBIDDEN_WORDS:
         if re.search(rf"\b{word}\b", q):
@@ -43,7 +46,7 @@ def execute_sql_query(query: str) -> str:
     lub komunikat o błędzie/sukcesie.
     """
     if not is_query_allowed(query):
-        return "Błąd: zapytanie zablokowane. Dozwolone jest tylko odczytywanie danych (SELECT) i dodawanie wydatków (INSERT)."
+        return "Błąd: zapytanie zablokowane. Dozwolone są tylko SELECT, INSERT i UPDATE (z WHERE)."
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -88,7 +91,7 @@ TOOLS_SCHEMA = [
         "type": "function",
         "function": {
             "name": "execute_sql_query",
-            "description": "Wykonuje zapytanie SQL na bazie SQLite i zwraca wynik. Dozwolone są tylko SELECT i INSERT.",
+            "description": "Wykonuje zapytanie SQL na bazie SQLite i zwraca wynik. Dozwolone są tylko SELECT, INSERT i UPDATE (z WHERE).",
             "parameters": {
                 "type": "object",
                 "properties": {

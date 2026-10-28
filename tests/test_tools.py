@@ -68,11 +68,20 @@ def test_delete_is_blocked():
     assert data[0]["total"] == 6
 
 def test_insert_with_forbidden_word_in_text_is_allowed():
-    """Słowo 'Update' w opisie wydatku nie powinno blokować INSERT-a."""
+    """Słowo 'Delete' w opisie wydatku nie powinno blokować INSERT-a."""
     result = execute_sql_query(
-        "INSERT INTO expenses (category, amount, description) VALUES ('Software', 10, 'Update licencji');"
+        "INSERT INTO expenses (category, amount, description) VALUES ('Software', 10, 'Delete konta testowego');"
     )
     assert "wykonane pomyślnie" in result
+
+def test_update_needs_where():
+    """UPDATE z WHERE działa, a bez WHERE jest blokowany (zmieniłby wszystkie wydatki)."""
+    assert "zablokowane" in execute_sql_query("UPDATE expenses SET amount = 0;")
+
+    result = execute_sql_query("UPDATE expenses SET amount = 175 WHERE id = 1;")
+    assert "wykonane pomyślnie" in result
+    data = json.loads(execute_sql_query("SELECT amount FROM expenses WHERE id = 1;"))
+    assert data[0]["amount"] == 175
 
 def test_execute_sql_query_invalid_syntax():
     """Sprawdza, czy funkcja bezpiecznie wyłapuje błędy składni SQL."""

@@ -2,8 +2,7 @@ services:
   expense-agent:
     build: .
     container_name: expense_ai_agent
-    environment:
-      - GROQ_API_KEY=${GROQ_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    # Klucze API wczytywane z pliku .env
+    env_file: .env
     stdin_open: true
     tty: true
