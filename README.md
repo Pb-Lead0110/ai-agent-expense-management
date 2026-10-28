@@ -2,7 +2,7 @@
 
 Agent AI w Pythonie, który odpowiada na pytania o domowe wydatki zadawane zwykłym językiem, np. „Ile wydaliśmy na jedzenie w październiku?”. Model sam decyduje, jakie zapytanie SQL wykonać na bazie SQLite (wzorzec **tool calling**), a potem podsumowuje wynik po polsku.
 
-**Demo online:** [TUTAJ-LINK.streamlit.app](https://TUTAJ-LINK.streamlit.app) - można przetestować bez instalacji i bez klucza API.
+**Demo online:** https://ai-agent-expense-management-jo7vhae2stttkaplwf6ucy.streamlit.app/ - można przetestować bez instalacji i bez klucza API.
 
 ## Jak to działa
 
